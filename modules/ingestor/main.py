@@ -1,41 +1,40 @@
 """
 Módulo Ingestor - MVP
 ====================
-... (comentários anteriores) ...
+... (docstrings) ...
 """
 
 import asyncio
 import redis.asyncio as redis
-import logging
+import logging  # <-- Importado
 import os
-import sys  # <-- Verifique se 'sys' está importado
+import sys
 import math
 from datetime import datetime
 from dotenv import load_dotenv
 
 # --- INÍCIO DA CORREÇÃO ---
 # Adiciona a pasta 'libs' (minúsculo) ao caminho do Python
-# Isso permite que 'import phasortoolbox' funcione
 from pathlib import Path
-
-# __file__ é o caminho deste arquivo (modules/ingestor/main.py)
-# .parent -> modules/ingestor
-# .parent.parent -> modules
-# .parent.parent.parent -> smart_pdc_v2 (a raiz do projeto)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-LIBS_PATH = PROJECT_ROOT / "libs"  # <-- Deve ser 'libs' minúsculo
-
-# Isso diz ao Python: "Ei, procure por bibliotecas aqui também!"
+LIBS_PATH = PROJECT_ROOT / "libs"
 sys.path.append(str(LIBS_PATH))
-# --- FIM DA CORREÇÃO ---
 
-# Agora o import deve funcionar, pois o Python encontra 'phasortoolbox'
-# dentro da pasta 'libs'
+# *** CORREÇÃO: Movido o setup do Logging para o TOPO ***
+# O Logger deve ser configurado ANTES de ser usado.
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s [%(levelname)s] (Ingestor): %(message)s')
+logger = logging.getLogger(__name__)
+# *** FIM DA CORREÇÃO ***
+# --- FIM DA MODIFICAÇÃO (do arquivo anterior) ---
+
+# Agora o import pode ser tentado e, se falhar, o logger existirá
 try:
     from phasortoolbox import Client
 except ModuleNotFoundError:
     logger.critical(f"FALHA: Não foi possível encontrar 'phasortoolbox' na pasta: {LIBS_PATH}")
-    logger.critical("Verifique se a pasta 'libs' existe na raiz do projeto e se 'phasortoolbox' está dentro dela.")
+    logger.critical("Verifique 1: A pasta 'libs' existe na raiz do projeto?")
+    logger.critical("Verifique 2: A pasta 'phasortoolbox' está dentro de 'libs'?")
     sys.exit(1)
 
 # --- Configuração ---
