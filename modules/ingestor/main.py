@@ -12,22 +12,7 @@ import sys
 import math
 from datetime import datetime
 from dotenv import load_dotenv
-
-# --- INÍCIO DA CORREÇÃO ---
-# Adiciona a pasta 'libs' (minúsculo) ao caminho do Python
-from pathlib import Path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-LIBS_PATH = PROJECT_ROOT / "libs"
-sys.path.append(str(LIBS_PATH))
-
-# *** CORREÇÃO: Movido o setup do Logging para o TOPO ***
-# O Logger deve ser configurado ANTES de ser usado.
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s [%(levelname)s] (Ingestor): %(message)s')
-logger = logging.getLogger(__name__)
-# *** FIM DA CORREÇÃO ***
-# --- FIM DA MODIFICAÇÃO (do arquivo anterior) ---
-
+from phasortoolbox.client import Client
 # Agora o import pode ser tentado e, se falhar, o logger existirá
 try:
     from phasortoolbox import Client
