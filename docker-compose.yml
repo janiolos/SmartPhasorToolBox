@@ -1,0 +1,67 @@
+# A linha "version" foi removida
+services:
+  # Serviço de Message Bus e Metadados: Redis
+  redis:
+    image: redis:8.2.2-alpine
+    container_name: pdc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - pdc-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Serviço do Banco de Dados: PostgreSQL + TimescaleDB
+  timescaledb:
+    image: timescale/timescaledb-ha:pg16 # <-- TAG DA IMAGEM CORRIGIDA
+    container_name: pdc-timescaledb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=pmu_user
+      - POSTGRES_PASSWORD=coloque_uma_senha_forte_aqui
+      - POSTGRES_DB=pmu_data
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+    networks:
+      - pdc-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Serviço de Visualização: Grafana
+  grafana:
+    image: grafana/grafana-oss:12.1.1-ubuntu
+    container_name: pdc-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - pdc-net
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis-data:
+  timescaledb-data:
+  grafana-data:
+
+networks:
+  pdc-net:
+    driver: bridge

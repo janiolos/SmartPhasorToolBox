@@ -1,0 +1,36 @@
+# Configurações da Aplicação Smart-Gemini PDC
+# Copie este arquivo para .env e ajuste os valores conforme necessário
+
+# Aplicação
+APP_NAME=Smart-Gemini PDC
+APP_VERSION=2.0.0
+DEBUG=False
+
+# Servidor
+HOST=0.0.0.0
+PORT=8000
+
+# Banco de Dados PostgreSQL (produção)
+# DATABASE_URL=postgresql://user:password@localhost:5432/openwams
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+
+# TimescaleDB (PostgreSQL com extensão de séries temporais)
+TIMESCALE_HOST=localhost
+TIMESCALE_PORT=5432
+TIMESCALE_DB=pmu_data
+TIMESCALE_USER=pmu_user
+TIMESCALE_PASSWORD=change_me_in_production
+
+# Logging
+LOG_LEVEL=INFO
+LOG_FILE=smart_gemini.log
+LOG_MAX_BYTES=52428800
+LOG_BACKUP_COUNT=10
+
+# PDC Receptor
+PDC_BUFFER_SIZE=4096
+PDC_TIMEOUT=30
